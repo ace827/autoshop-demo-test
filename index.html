@@ -7,6 +7,17 @@
 
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
+  <script id="retell-widget"
+    src="https://dashboard.retellai.com/retell-widget-v2.js"
+    data-voice-public-key="public_key_67bcf12c573597e69878b"
+    data-voice-agent-id="agent_43176cc940fabe9c2f75c60125"
+    data-title="Test Auto Shop"
+    data-color="#d97706"
+    data-fab-text="Talk to Us"
+    data-bot-name="Test Auto Shop AI Receptionist"
+    data-greeting-message="Hey, thanks for calling Test Auto Shop! I'm your AI receptionist. I can help you schedule an appointment, answer questions about our services, or give you a quick estimate. How can I help you today?"
+  ></script>
+
   <style>
     :root {
       --dark:    #0d1b2a;
@@ -172,67 +183,22 @@
     .footer-left strong { color: rgba(255,255,255,0.65); }
     .powered { font-size: 0.7rem; color: var(--accent); font-weight: 700; letter-spacing: 0.04em; }
 
-    /* ORBIT AI CALL BUTTON — inline in right column */
-    .call-block {
-      background: var(--dark);
-      border-radius: 9px;
-      padding: 18px 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      text-align: center;
+    .demo-cta {
+      background: var(--dark); border-radius: 9px; padding: 14px 16px; position: relative;
     }
-
-    .call-block .cta-label {
+    .demo-cta .cta-label {
       font-size: 0.62rem; font-weight: 700; letter-spacing: 0.1em;
-      color: var(--accent); text-transform: uppercase;
+      color: var(--accent); text-transform: uppercase; margin-bottom: 3px;
     }
-
-    .call-block .cta-text {
-      font-size: 0.74rem; color: rgba(255,255,255,0.7); line-height: 1.4;
+    .demo-cta .cta-text { font-size: 0.74rem; color: rgba(255,255,255,0.75); line-height: 1.4; padding-right: 28px; }
+    .arrow {
+      position: absolute; bottom: 10px; right: 12px;
+      font-size: 1.3rem; color: var(--accent);
+      animation: bounce 1.2s ease-in-out infinite;
     }
-
-    #orbit-call-btn {
-      background: var(--accent);
-      color: #fff;
-      border: none;
-      border-radius: 50px;
-      padding: 13px 26px;
-      font-family: 'Inter', sans-serif;
-      font-size: 0.88rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      box-shadow: 0 4px 18px rgba(217,119,6,0.4);
-      transition: background 0.2s, transform 0.15s;
-      position: relative;
-    }
-    #orbit-call-btn:hover { background: #b45309; transform: scale(1.03); }
-    #orbit-call-btn.active { background: #991b1b; box-shadow: 0 4px 18px rgba(153,27,27,0.4); }
-
-    #orbit-call-btn .btn-icon { width: 17px; height: 17px; fill: #fff; flex-shrink: 0; }
-
-    #orbit-call-btn.active::before {
-      content: '';
-      position: absolute;
-      inset: -6px;
-      border-radius: 50px;
-      border: 2px solid #991b1b;
-      animation: pulse-ring 1.2s ease-out infinite;
-    }
-    @keyframes pulse-ring {
-      0%   { transform: scale(1); opacity: 0.6; }
-      100% { transform: scale(1.18); opacity: 0; }
-    }
-
-    .orbit-tag {
-      font-size: 0.58rem; font-weight: 600; letter-spacing: 0.06em;
-      color: rgba(255,255,255,0.7); text-transform: uppercase;
-      border-left: 1px solid rgba(255,255,255,0.3);
-      padding-left: 8px; line-height: 1.2;
+    @keyframes bounce {
+      0%, 100% { transform: translate(0,0); }
+      50%       { transform: translate(4px,4px); }
     }
 
     /* MOBILE */
@@ -362,14 +328,10 @@
           </div>
         </div>
 
-        <div class="call-block">
+        <div class="demo-cta">
           <div class="cta-label">Try the Demo</div>
-          <div class="cta-text">Tap the button below to speak with the AI receptionist live.</div>
-          <button id="orbit-call-btn" onclick="toggleCall()">
-            <svg class="btn-icon"><use href="#icon-phone"/></svg>
-            <span id="btn-label">Talk to Us</span>
-            <span class="orbit-tag">Orbit AI</span>
-          </button>
+          <div class="cta-text">Tap <strong style="color:#fff;">"Talk to Us"</strong> in the bottom-right corner to speak with the AI receptionist live.</div>
+          <div class="arrow">↘</div>
         </div>
 
         <div class="try-box">
@@ -387,78 +349,6 @@
 
   </div>
 
-  <!-- Retell JS SDK (no widget, no Retell branding) -->
-  <script src="https://cdn.jsdelivr.net/npm/retell-client-js-sdk@latest/dist/index.umd.js"></script>
-
-  <script>
-    // ============================================================
-    // REPLACE THESE TWO VALUES BEFORE DEPLOYING
-    // ============================================================
-    const AGENT_ID    = "agent_43176cc940fabe9c2f75c60125";
-    const PUBLIC_KEY  = "public_key_67bcf12c573597e69878b";
-    // ============================================================
-
-    const retellClient = new RetellWebClient();
-    let callActive = false;
-
-    async function toggleCall() {
-      if (callActive) {
-        retellClient.stopCall();
-        return;
-      }
-
-      const btn = document.getElementById("orbit-call-btn");
-      const label = document.getElementById("btn-label");
-      label.textContent = "Connecting...";
-      btn.disabled = true;
-
-      try {
-        // Create web call directly via Retell public API
-        const res = await fetch("https://api.retellai.com/v2/create-web-call", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + PUBLIC_KEY
-          },
-          body: JSON.stringify({ agent_id: AGENT_ID })
-        });
-
-        const data = await res.json();
-
-        await retellClient.startCall({ accessToken: data.access_token });
-
-      } catch (err) {
-        console.error("Call error:", err);
-        label.textContent = "Talk to Us";
-        btn.disabled = false;
-      }
-    }
-
-    retellClient.on("call_started", () => {
-      const btn = document.getElementById("orbit-call-btn");
-      const label = document.getElementById("btn-label");
-      btn.classList.add("active");
-      btn.disabled = false;
-      label.textContent = "End Call";
-      // swap icon to stop
-      btn.querySelector(".btn-icon use").setAttribute("href", "#icon-stop");
-      callActive = true;
-    });
-
-    retellClient.on("call_ended", () => {
-      const btn = document.getElementById("orbit-call-btn");
-      const label = document.getElementById("btn-label");
-      btn.classList.remove("active");
-      label.textContent = "Talk to Us";
-      btn.querySelector(".btn-icon use").setAttribute("href", "#icon-phone");
-      callActive = false;
-    });
-
-    retellClient.on("error", (err) => {
-      console.error("Retell error:", err);
-      retellClient.stopCall();
-    });
-  </script>
 
 </body>
 </html>
